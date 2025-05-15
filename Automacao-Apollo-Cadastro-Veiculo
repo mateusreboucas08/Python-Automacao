@@ -1,0 +1,77 @@
+#Automação Cadastro Placa com Api Consulta Placa
+
+import pyautogui
+import random
+import time
+
+
+# Simula placas válidas (modelo antigo e Mercosul)
+def gerar_placa_aleatoria():
+    letras = ''.join(random.choices('ABCDEFGHIJKLMNOPQRSTUVWXYZ', k=3))
+    numeros = ''.join(random.choices('0123456789', k=4))
+    return f"{letras}{numeros}"
+
+# Combustível por placa simulada (apenas exemplo)
+def tipo_combustivel(placa):
+    combustiveis = ['Gasolina', 'Etanol', 'Diesel', 'GNV', 'Flex']
+    return random.choice(combustiveis)
+
+# Seleção do tipo de proprietário
+def selecionar_proprietario(tipo):
+    if tipo == "próprio":
+        pyautogui.click(1092, 291)
+    elif tipo == "cliente":
+        pyautogui.click(1092, 311)
+    elif tipo == "fornecedor":
+        pyautogui.click(1091, 333)
+    else:
+        print("Tipo inválido!")
+        return False
+    return True
+
+# Espera inicial e pressiona F10
+time.sleep(2)
+pyautogui.press('f10')
+
+# Cadastro de veículo conforme o tipo
+def cadastrar_veiculo(tipo):
+    placa = gerar_placa_aleatoria()
+
+    # Primeiro clique no local comum
+    pyautogui.click(1235, 175)
+    time.sleep(5)
+
+    if not selecionar_proprietario(tipo):
+        return
+
+    time.sleep(2)
+    pyautogui.click(703, 274)
+    pyautogui.write(placa)
+    pyautogui.press('tab')
+    time.sleep(5)
+
+    # Preencher tipo de combustível na coordenada (1118, 263)
+    pyautogui.click(1118, 263)
+    pyautogui.write(tipo_combustivel(placa))
+
+    if tipo == "fornecedor":
+        pyautogui.click(773, 379)
+        pyautogui.write("1")
+        pyautogui.click(1231, 241)
+
+    elif tipo == "cliente":
+        pyautogui.click(757, 338)
+        pyautogui.write("1")
+        pyautogui.click(1231, 241)
+
+    elif tipo == "próprio":
+        pyautogui.click(1231, 241)
+
+# Exemplo de uso:
+time.sleep(3)
+
+tipos = ['fornecedor', 'cliente', 'próprio']
+
+for tipo in tipos:
+    cadastrar_veiculo(tipo)
+    time.sleep(2)
